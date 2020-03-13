@@ -8,6 +8,5 @@ class UserConsumer(ApiConsumer):
 
     def is_following_me(self, user):
         me = self._api.me()
-        friendship = self._api.show_friendship(source_id=me['id'], target_id=user['id'])
-        source = friendship['relationship']['source']
-        return source['followed_by']
+        friendship = self._api.show_friendship(source_id=me.id, target_id=user.id)
+        return friendship[1].followed_by
