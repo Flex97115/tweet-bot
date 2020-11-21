@@ -63,12 +63,7 @@ async def __do_action(tweets, action):
 
 
 def __can_retweet(tweet):
-    return user_consumer.is_following_me(tweet.user) and __tweet_is_not_a_reply(tweet)
-
-
-def __tweet_is_not_a_reply(tweet):
-    return tweet.in_reply_to_status_id is None \
-           and tweet.in_reply_to_user_id is None
+    return user_consumer.is_following_me(tweet.user) and tweet.in_reply_to_status_id is None
 
 
 def __chunks(iterable, n):
