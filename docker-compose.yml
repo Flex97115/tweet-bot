@@ -9,6 +9,7 @@ services:
       - ACCESS_TOKEN_SECRET=${ACCESS_TOKEN_SECRET}
       - TWEET_QUERY=@prinz_flex
       - SERVICE_PORT=8000
+      - WEB_CONCURRENCY=4
       - DEBUG=True
     ports:
       - "8000:8000"

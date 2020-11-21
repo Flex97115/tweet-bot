@@ -1,1 +1,1 @@
-web: ./entrypoint.sh
+web: gunicorn app:app -k uvicorn.workers.UvicornWorker
