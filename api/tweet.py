@@ -2,7 +2,6 @@ import business.service.tweet_service as tweet_service
 import business.service.config_service as config_service
 import business.mapper.tweet_mapper as tweet_mapper
 from starlette.responses import JSONResponse
-from starlette.responses import Response
 
 
 async def search(request):
@@ -18,14 +17,3 @@ async def since_search(request):
     cursor = tweet_service.simple_search(query, last_retweet_id)
     tweets = tweet_mapper.flatten_cursor(cursor)
     return JSONResponse(list(map(tweet_mapper.to_json, tweets)))
-
-
-async def initialise_job(request):
-    query = request.query_params['q']
-    cursor = tweet_service.simple_search(query)
-    last_tweet = tweet_service.get_latest(cursor.items())
-    if last_tweet:
-        config_service.set_last_retweet_id(last_tweet.id)
-        return JSONResponse(last_tweet._json)
-    response = Response('Not found', status_code=404)
-    return response

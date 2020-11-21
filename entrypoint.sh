@@ -1,0 +1,1 @@
+gunicorn --bind 0.0.0.0:${SERVICE_PORT} app:app -w 4 -k uvicorn.workers.UvicornWorker

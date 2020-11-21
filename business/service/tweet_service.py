@@ -6,7 +6,6 @@ import itertools
 tweet_consumer = TweetConsumer()
 user_consumer = UserConsumer()
 
-
 MAX_TWEET_NUMBER = 10
 
 # Action
@@ -32,34 +31,46 @@ def simple_search(query, since_id=None):
     return tweet_consumer.search(query, since_id)
 
 
-def get_latest(tweets):
-    tweets = [t for t in tweets if t]
+def get_latest_retweetable_tweet(tweets):
+    tweets = list(filter(__can_retweet, [t for t in tweets if t]))
     if tweets:
         tweets.sort(key=lambda t: t.id, reverse=True)
         return tweets[0]
 
 
 def __create_tasks(cursor, action):
+    tasks = []
     for page in cursor.pages():
         print('{} tweets found'.format(len(page)))
         batches = __chunks(page, MAX_TWEET_NUMBER)
-        return [asyncio.create_task(__do_action(b, action)) for b in batches]
+        tasks = [asyncio.create_task(__do_action(b, action)) for b in batches]
+    return tasks
 
 
 async def __do_action(tweets, action):
     retweeted = []
     for tweet in tweets:
         if ACTION_RETWEET == action:
-            if user_consumer.is_following_me(tweet.user) and not hasattr(tweet, 'retweeted_status'):
-                print('User {} is a follower execute retweet'.format(tweet.user.screen_name))
+            if __can_retweet(tweet):
+                print('Tweeting tweet {} of user {}'.format(tweet.text, tweet.user.screen_name))
                 retweeted.append(tweet_consumer.retweet(tweet))
             else:
-                print('User {} isnt a follower cannot retweet or tweet {} is a retweet'.format(tweet.user.screen_name, tweet.text))
+                print('Tweet {} of user {} does not meet the prerequisites to be retweet'
+                      .format(tweet.text, tweet.user.screen_name))
         elif ACTION_UNRETWEET == action:
             retweeted.append(tweet_consumer.unretweet(tweet))
     return retweeted
 
 
+def __can_retweet(tweet):
+    return user_consumer.is_following_me(tweet.user) and __tweet_is_not_a_reply(tweet)
+
+
+def __tweet_is_not_a_reply(tweet):
+    return tweet.in_reply_to_status_id is None \
+           and tweet.in_reply_to_user_id is None
+
+
 def __chunks(iterable, n):
     for i in range(0, len(iterable), n):
-        yield iterable[i:i+n]
+        yield iterable[i:i + n]
