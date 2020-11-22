@@ -6,7 +6,7 @@ import itertools
 tweet_consumer = TweetConsumer()
 user_consumer = UserConsumer()
 
-MAX_TWEET_NUMBER = 10
+MAX_TWEET_NUMBER = 5
 
 # Action
 ACTION_RETWEET = 'RETWEET'
