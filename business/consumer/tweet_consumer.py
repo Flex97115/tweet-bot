@@ -12,9 +12,9 @@ class TweetConsumer(ApiConsumer):
         print('Search for {}'.format(query))
         #TODO: create a request builder, its ugly...
         if since_id:
-            return tweepy.Cursor(self._api.search, q=query, count=100, since_id=since_id)
+            return tweepy.Cursor(self._api.search, q=query, count=30, since_id=since_id)
         else:
-            return tweepy.Cursor(self._api.search, q=query, count=100)
+            return tweepy.Cursor(self._api.search, q=query, count=30)
 
     def retweet(self, tweet):
         try:
